@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3 Toruses Visualization</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Torus parameters
+    const geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
+    const materials = [
+      new THREE.MeshPhongMaterial({ color: 0xff0000 }), // Red
+      new THREE.MeshPhongMaterial({ color: 0x0000ff }), // Blue
+      new THREE.MeshPhongMaterial({ color: 0x00ff00 })  // Green
+    ];
+
+    // Create and position toruses
+    const toruses = [];
+    for (let i = 0; i < 3; i++) {
+      const mesh = new THREE.Mesh(geometry, materials[i]);
+      mesh.position.x = (i - 1) * 3; // Spread them out
+      toruses.push(mesh);
+      scene.add(mesh);
+    }
+
+    // Lighting
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x404040));
+
+    camera.position.z = 7;
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      toruses.forEach((torus, i) => {
+        torus.rotation.x += 0.01 + i * 0.005;
+        torus.rotation.y += 0.01 + i * 0.005;
+      });
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Responsive resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html> 
