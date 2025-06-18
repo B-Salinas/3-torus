@@ -36,9 +36,43 @@ for (let i = 0; i < 3; i++) {
 const light = new THREE.PointLight(0xffffff, 1, 100);
 light.position.set(5, 5, 5);
 scene.add(light);
-scene.add(new THREE.AmbientLight(0x404040));
+scene.add(new THREE.AmbientLight(0xffffff));
 
 camera.position.z = 7;
+
+// 3D Grid Helper
+function create3DGrid(size = 10, divisions = 10, color = 0xffffff) {
+  const step = size / divisions;
+  const half = size / 2;
+  const vertices = [];
+
+  // Lines parallel to X
+  for (let y = -half; y <= half; y += step) {
+    for (let z = -half; z <= half; z += step) {
+      vertices.push(-half, y, z, half, y, z);
+    }
+  }
+  // Lines parallel to Y
+  for (let x = -half; x <= half; x += step) {
+    for (let z = -half; z <= half; z += step) {
+      vertices.push(x, -half, z, x, half, z);
+    }
+  }
+  // Lines parallel to Z
+  for (let x = -half; x <= half; x += step) {
+    for (let y = -half; y <= half; y += step) {
+      vertices.push(x, y, -half, x, y, half);
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  const material = new THREE.LineBasicMaterial({ color, opacity: 0.3, transparent: true });
+  return new THREE.LineSegments(geometry, material);
+}
+
+const grid3D = create3DGrid(10, 10, 0xffffff);
+scene.add(grid3D);
 
 // Animation loop
 function animate() {
@@ -57,4 +91,11 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Toggle grid visibility with 'G' key
+window.addEventListener('keydown', (event) => {
+  if (event.key.toLowerCase() === 'g') {
+    grid3D.visible = !grid3D.visible;
+  }
 }); 
