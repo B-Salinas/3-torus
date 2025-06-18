@@ -7,6 +7,11 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Add OrbitControls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+
 // Torus parameters
 const geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
 const materials = [
@@ -39,6 +44,7 @@ function animate() {
     torus.rotation.x += 0.01 + i * 0.005;
     torus.rotation.y += 0.01 + i * 0.005;
   });
+  controls.update();
   renderer.render(scene, camera);
 }
 animate();
